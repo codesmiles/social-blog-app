@@ -4,6 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Posts_model;
+
+// create
+// show
+// update
+// delete
+// index
+
+
 class PostController extends Controller
 {
     public function store(Request $request)
@@ -24,4 +32,50 @@ class PostController extends Controller
             "post" => $post
         ], 201);
     }
+
+    public function show(){
+        $user = auth()->user()->id;
+        $posts = Posts_model::where('user_id', $user)->get();
+
+        return response()->json([
+            "message" => "successful",
+            "posts" => $posts
+        ], 200);
+    }
+
+    public function showSingle($id){
+        $user = auth()->user()->id;
+        $post = Posts_model::where('user_id', $user)->where('id', $id)->first();
+
+        return response()->json([
+            "message" => "successful",
+            "post" => $post
+        ], 200);
+
+    }
+    public function editSinglePost(Request $request, $id){
+        $user = auth()->user()->id;
+        $post = Posts_model::where('user_id', $user)->where('id', $id)->first();
+
+        $post->title = $request->title;
+        $post->details = $request->details;
+        $post->save();
+
+        return response()->json([
+            "message" => "successful",
+            "post" => $post
+        ], 200);
+    }
+
+    public function deleteSinglePost($id){
+        $user = auth()->user()->id;
+        $post = Posts_model::where('user_id', $user)->where('id', $id)->first();
+
+        $post->delete();
+
+        return response()->json([
+            "message" => "successfully deleted post",
+        ], 200);
+    }
+
 }

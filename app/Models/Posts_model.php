@@ -22,5 +22,11 @@ class Posts_model extends Model
         return $this->belongsTo(User::class);
     }
 
+    // JUST IN CASE I WANT TO RUN THE COMMENT ENDPOINT
+    // public function comments()
+    // {
+    //     return $this->hasMany(Comments_model::class);
+    // }
+
     
 }
