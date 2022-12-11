@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\FriendsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +23,7 @@ use App\Http\Controllers\UserController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
  //public routes
 Route::get("/", [UserController::class,"index"]);
 Route::post("/signup", [AuthController::class,"store"]);
@@ -43,8 +45,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::delete("user/delete-single-post/{id}", [PostController::class,"deleteSinglePost"]);
 
     // user friends
-    // Route::get("/add-friend", [UserController::class,"addFriend"]);
-    // Route::get("/user/{id}/search", [UserController::class,"search"]);
-    // Route::get("/add-friend", [UserController::class,"addFriend"]);
+    Route::post("user/add-friend/{id}", [FriendsController::class,"addFriend"]);
+    Route::get("user/show-friends/", [FriendsController::class,"showFriends"]);
+    Route::get("user/show-single-friend/{id}", [FriendsController::class,"showSingleFriend"]);
+    Route::get("user/show-friend-posts", [PostController::class,"showFriendPosts"]);
+    Route::delete("user/delete-friend/{id}", [FriendsController::class,"deleteFriend"]);
 });
 

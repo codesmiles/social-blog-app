@@ -23,7 +23,8 @@ class UserController extends Controller
         $user = User::where('id', auth()->user()->id)->first();
         return response()->json([
             "message" => "successful",
-            "user" => $user
+            "user" => $user,
+            "friends" => $user->friends,
         ], 200);
     }
    

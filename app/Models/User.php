@@ -41,6 +41,12 @@ class User extends Authenticatable
         return $this->hasMany(Posts_model::class);
     }
 
+    public function friends()
+    {
+        return $this->belongsToMany(User::class, 'friend-users', 'user_id', 'friend_id');
+    }
+
+    
     /**
      * The attributes that should be cast.
      *
