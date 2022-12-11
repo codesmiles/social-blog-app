@@ -4,10 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use \Illuminate\Http\Response;
-use Psy\Util\Json;
 
 
 class UserController extends Controller
