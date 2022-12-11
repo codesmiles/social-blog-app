@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use \Illuminate\Http\Response;
+use Psy\Util\Json;
 
 
 // store
@@ -117,7 +118,13 @@ class UserController extends Controller
 
     }
 
-    public function pprofile(Request $request){}
+    public function profile(Request $request){
+        $user = User::where('id', auth()->user()->id)->first();
+        return response()->json([
+            "message" => "successful",
+            "user" => $user
+        ], 200);
+    }
     /**
      * Update the specified resource in storage.
      *
