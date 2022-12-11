@@ -37,6 +37,12 @@ class PostController extends Controller
         $user = auth()->user()->id;
         $posts = Posts_model::where('user_id', $user)->get();
 
+        if($posts->isEmpty()){
+            return response()->json([
+                "message" => "No posts found",
+            ], 404);
+        }
+
         return response()->json([
             "message" => "successful",
             "posts" => $posts
@@ -47,6 +53,12 @@ class PostController extends Controller
         $user = auth()->user()->id;
         $post = Posts_model::where('user_id', $user)->where('id', $id)->first();
 
+        if(!$post){
+            return response()->json([
+                "message" => "No post found",
+            ], 404);
+        }
+
         return response()->json([
             "message" => "successful",
             "post" => $post
@@ -56,6 +68,12 @@ class PostController extends Controller
     public function editSinglePost(Request $request, $id){
         $user = auth()->user()->id;
         $post = Posts_model::where('user_id', $user)->where('id', $id)->first();
+
+        if(!$post){
+            return response()->json([
+                "message" => "No post found",
+            ], 404);
+        }
 
         $post->title = $request->title;
         $post->details = $request->details;
@@ -71,8 +89,13 @@ class PostController extends Controller
         $user = auth()->user()->id;
         $post = Posts_model::where('user_id', $user)->where('id', $id)->first();
 
-        $post->delete();
+        if(!$post){
+            return response()->json([
+                "message" => "No post found",
+            ], 404);
+        }
 
+        $post->delete();
         return response()->json([
             "message" => "successfully deleted post",
         ], 200);
