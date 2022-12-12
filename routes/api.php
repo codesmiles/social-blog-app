@@ -40,15 +40,22 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // user post
     Route::post("user/create-post", [PostController::class,"store"]);
     Route::get("user/show-posts", [PostController::class,"show"]);
-    Route::get("user/show-single-post/{id}", [PostController::class,"showSingle"]);
-    Route::put("user/edit-single-post/{id}", [PostController::class,"editSinglePost"]);
-    Route::delete("user/delete-single-post/{id}", [PostController::class,"deleteSinglePost"]);
+    Route::get("user/show-single-post/{post_id}", [PostController::class,"showSingle"]);
+    Route::put("user/edit-single-post/{post_id}", [PostController::class,"editSinglePost"]);
+    Route::delete("user/delete-single-post/{post_id}", [PostController::class,"deleteSinglePost"]);
 
     // user friends
-    Route::post("user/add-friend/{id}", [FriendsController::class,"addFriend"]);
-    Route::get("user/show-friends/", [FriendsController::class,"showFriends"]);
-    Route::get("user/show-single-friend/{id}", [FriendsController::class,"showSingleFriend"]);
-    Route::get("user/show-friend-posts", [PostController::class,"showFriendPosts"]);
+    Route::post("user/search-friends", [FriendsController::class,"searchFriends"]);
+    Route::post("user/add-friend/{friend_id}", [FriendsController::class,"addFriend"]);
+
+
+    Route::get("user/show-user-friends/", [FriendsController::class,"showUserFriends"]);
+    Route::get("user/show-user-single-friend/{friend_id}", [FriendsController::class,"showSingleFriend"]);
+
+    // user friends post
+    Route::get("user/{friend_id}/show-friend-posts", [PostController::class,"showFriendPosts"]);
+    Route::get("user/{friend_id}/show-single-friend-post/{post_id}", [PostController::class,"showSingleFriendPost"]);
     Route::delete("user/delete-friend/{id}", [FriendsController::class,"deleteFriend"]);
+
 });
 

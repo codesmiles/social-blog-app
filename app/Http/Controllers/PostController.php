@@ -49,9 +49,9 @@ class PostController extends Controller
         ], 200);
     }
 
-    public function showSingle($id){
+    public function showSingle($post_id){
         $user = auth()->user()->id;
-        $post = Posts_model::where('user_id', $user)->where('id', $id)->first();
+        $post = Posts_model::where('user_id', $user)->where('id', $post_id)->first();
 
         if(!$post){
             return response()->json([
@@ -65,9 +65,9 @@ class PostController extends Controller
         ], 200);
 
     }
-    public function editSinglePost(Request $request, $id){
+    public function editSinglePost(Request $request, $post_id){
         $user = auth()->user()->id;
-        $post = Posts_model::where('user_id', $user)->where('id', $id)->first();
+        $post = Posts_model::where('user_id', $user)->where('id', $post_id)->first();
 
         if(!$post){
             return response()->json([
@@ -85,9 +85,9 @@ class PostController extends Controller
         ], 200);
     }
 
-    public function deleteSinglePost($id){
+    public function deleteSinglePost($post_id){
         $user = auth()->user()->id;
-        $post = Posts_model::where('user_id', $user)->where('id', $id)->first();
+        $post = Posts_model::where('user_id', $user)->where('id', $post_id)->first();
 
         if(!$post){
             return response()->json([
