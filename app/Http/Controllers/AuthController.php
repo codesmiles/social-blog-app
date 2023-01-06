@@ -5,9 +5,18 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use App\Providers\UserFunctionServiceProvider;
 
 class AuthController extends Controller
 {
+
+//! learn to use services file to handle repetitive code
+// 1. create a service file
+// 2. create a function to handle the repetitive code
+// 3. call the function in the controller
+// laravel generate a file to keep the repetitive code
+
+// read more laravel documentation
 
 
     
@@ -20,7 +29,7 @@ class AuthController extends Controller
      */
     public function store(Request $request)
     {
-        $validateData = $request->validate([
+        $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'phone' => 'required',
@@ -29,26 +38,27 @@ class AuthController extends Controller
         ]);
 
         // user validation
-        $validator = Validator::make(request()->all(), [
+        Validator::make(request()->all(), [
             'email' => 'required|email|exists:users,email',
             'password' => 'required',
             'name' => 'required',
             'phone' => 'required',
 
         ]);
-
-        $user = User::create([
+//  Model, associated array
+        $data = [
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
-        ]);
+        ]
+        $user = User::create($data);
 
-        // $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('auth_token')->plainTextToken;
         $response = [
             'user' => $user,
             'message' => 'User created',
-            // 'token' => $token
+            'token' => $token
 
         ];
         return response($response, 201);
