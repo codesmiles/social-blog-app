@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\ValidateUserStoreRequest;
 
-// use App\Repository\AuthRepository;
-// use App\Interfaces\AuthInterface;
+
+use App\Interfaces\AuthInterface;
 
 
 
@@ -27,11 +27,11 @@ class AuthController extends Controller
 // read more laravel documentation
 
 
-
-    // public function __construct(AuthInterface $AuthRepository)
-// {
-//     $this->AuthRepository = $AuthRepository;
-// }
+     private AuthInterface $AuthRepository;
+    public function __construct(AuthInterface $AuthRepository)
+{
+    $this->AuthRepository = $AuthRepository;
+}
 
 
     //-------------------------- REGISTER--------------------------------
@@ -66,13 +66,20 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ];
 
-        $user = User::create($data);
-        
-        $response = [
+        $user = $this->AuthRepository->register($data);
+
+        return response()->json([
             'user' => $user,
             'message' => 'User created',
-        ];
-        return response()->json($response,  Response::HTTP_CREATED);
+        ], Response::HTTP_CREATED);
+
+        // $user = User::create($data);
+        
+        // $response = [
+        //     'user' => $user,
+        //     'message' => 'User created',
+        // ];
+        // return response()->json($response,  Response::HTTP_CREATED);
 
     }
 
