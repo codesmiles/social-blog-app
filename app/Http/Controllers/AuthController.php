@@ -2,10 +2,18 @@
 
 namespace App\Http\Controllers;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\Request;
-use App\Providers\UserFunctionServiceProvider;
+use App\Http\Requests\ValidateUserStoreRequest;
+
+// use App\Repository\AuthRepository;
+// use App\Interfaces\AuthInterface;
+
+
+
 
 class AuthController extends Controller
 {
@@ -19,7 +27,13 @@ class AuthController extends Controller
 // read more laravel documentation
 
 
-    
+
+    // public function __construct(AuthInterface $AuthRepository)
+// {
+//     $this->AuthRepository = $AuthRepository;
+// }
+
+
     //-------------------------- REGISTER--------------------------------
     /**
      * Store a newly created resource in storage.
@@ -27,41 +41,39 @@ class AuthController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse 
     {
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email',
-            'phone' => 'required',
-            'password' => 'required',
-
-        ]);
-
         // user validation
-        Validator::make(request()->all(), [
-            'email' => 'required|email|exists:users,email',
+       $validator= Validator::make(request()->all(), [
+            'email' => 'required|email|unique:users,email',
             'password' => 'required',
             'name' => 'required',
             'phone' => 'required',
-
         ]);
-//  Model, associated array
+
+        if($validator->fails()){
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY); // 422 status code
+        }
+        
+        //  Model, associated array
         $data = [
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
-        ]
-        $user = User::create($data);
+        ];
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $user = User::create($data);
+        
         $response = [
             'user' => $user,
             'message' => 'User created',
-            'token' => $token
-
         ];
-        return response($response, 201);
+        return response()->json($response,  Response::HTTP_CREATED);
+
     }
 
     //--------------------- LOGIN-----------------------
