@@ -1,16 +1,16 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Interfaces\AuthInterface;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Requests\ValidateUserStoreRequest;
-
-
-use App\Interfaces\AuthInterface;
+// use App\Http\Requests\ValidateUserStoreRequest;
 
 
 
@@ -25,7 +25,6 @@ class AuthController extends Controller
 // laravel generate a file to keep the repetitive code
 
 // read more laravel documentation
-
 
      private AuthInterface $AuthRepository;
     public function __construct(AuthInterface $AuthRepository)
@@ -43,10 +42,12 @@ class AuthController extends Controller
      */
     public function store(Request $request): JsonResponse 
     {
+        // dd($request->only('email', 'password', ));
+
         // user validation
        $validator= Validator::make(request()->all(), [
             'email' => 'required|email|unique:users,email',
-            'password' => 'required',
+            'password' => 'required|min:5',
             'name' => 'required',
             'phone' => 'required',
         ]);
@@ -68,69 +69,70 @@ class AuthController extends Controller
 
         $user = $this->AuthRepository->register($data);
 
+        
+
         return response()->json([
             'user' => $user,
             'message' => 'User created',
         ], Response::HTTP_CREATED);
 
-        // $user = User::create($data);
         
-        // $response = [
-        //     'user' => $user,
-        //     'message' => 'User created',
-        // ];
-        // return response()->json($response,  Response::HTTP_CREATED);
-
+        // or
+        /*
+        $user = User::create($data);
+        
+        $response = [
+            'user' => $user,
+            'message' => 'User created',
+        ];
+        return response()->json($response,  Response::HTTP_CREATED);
+*/
     }
 
     //--------------------- LOGIN-----------------------
-    public function login(request $request)
+    public function login(Request $request):JsonResponse
     {
+        // validate user
         $validator = Validator::make(request()->all(), [
             'email' => 'required|email|exists:users,email',
-            'password' => 'required_with:password|same:password|min:6',
-            // check if the user is logged in
-            // 'is_logged_in' => 'required|boolean|in:0,1|same:is_logged_in',
-
+            'password' => 'required_with:password|same:password',
         ]);
 
+        // return error if validation fails
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Invalid credentials'
-            ], 401);
+            ], Response::HTTP_UNAUTHORIZED); //422
         }
+        
+        // check if user is logged in and return error if true
+        $credentials = request()->only('email', 'password');
 
-        // return is_logged_in to true
-        $user = User::where('email', $request->email)->first();
-        if ($user->is_logged_in == true) {
+        // $user = $this->AuthRepository->login($credentials);
+        if (!Auth::attempt($credentials)) {
             return response()->json([
-                'message' => 'User already logged in'
-            ], 409);
+                'message' => 'Invalid credentials'
+            ], Response::HTTP_UNPROCESSABLE_ENTITY); //422
+            
         }
-
-        // loggin users in
-        $user->is_logged_in = true;
-        $user->save();
-        // sanctum token        
-        $token = $user->createToken('auth_token')->plainTextToken;
+        
+        // login users
         return response()->json([
-            'message' => 'Logged in',
-            'token' => $token
-        ], 200);
+         'message' => 'Logged in',
+        'token' => auth()->user()->createToken('auth_token')->plainTextToken,
+        ], Response::HTTP_OK);
+
 
     }
     //    -----------------------------LOGOUT USER -----------------------------------------
     public function logout(request $request)
     {
-        $user = User::where('id', auth()->user()->id)->first();
-        // loggin users out
-        $user->is_logged_in = false;
-        $user->save();
+        
         auth()->user()->tokens()->delete();
 
         return response()->json([
             'message' => 'Logged out',
-        ], 200);
+        ], Response::HTTP_OK);
 
     }
 }
