@@ -2,132 +2,114 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Interfaces\FriendsInterface;
+// use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class FriendsController extends Controller
 {
+   private FriendsInterface $FriendsRepository;
+    public function __construct(FriendsInterface $FriendsRepository)
+    {
+        $this->FriendsRepository = $FriendsRepository;
+    }
+
     public function searchFriends(Request $request)
     {
-        $validate = $request->validate([
+        $request->validate([
             'name' => 'required|string|min:3',
         ]);
 
-        $user = auth()->user()->id;
-        $friend = User::where('name', $request->name)->where('id', '!=', $user)->get();
-        
+        // $friends = app(FriendsInterface::class)->searchFriends();
+
+        $friend = $this->FriendsRepository->searchFriends($request);
+
+        if ($friend == Response::HTTP_NOT_FOUND) {
+            return response()->json([
+                "message" => "No friend found",
+            ], Response::HTTP_NOT_FOUND);
+        }
         return response()->json([
             "message" => "successful",
-            "data" => $friend
-        ], 200);
+            "data" => $friend,
+        ], Response::HTTP_OK);
     }
 
     public function addFriend($friend_id)
     {
-        auth()->user()->friends()->attach($friend_id);
 
-        return response()->json([
-            "message" => "Friend added successfully",
-        ], 201);
-    }
+        $data = $this->FriendsRepository->addFriend($friend_id);
 
-
-    public function showUserFriends()
-    {
-        $friends = auth()->user()->friends()->get();
-        if ($friends->isEmpty()) {
+        if ($data == Response::HTTP_CONFLICT) {
             return response()->json([
-                "message" => "No friends found",
-            ], 201);
+                "message" => "Friend already exists",
+            ], Response::HTTP_CONFLICT);
         }
 
         return response()->json([
+            "message" => "Friend added successfully",
+        ], Response::HTTP_CREATED);
+    }
+
+    public function showUserFriends()
+    {
+        // $friends = app(FriendsInterface::class)->showUserFriends();
+        $friends = $this->FriendsRepository->showUserFriends();
+
+        return response()->json([
             "message" => "successful",
-            "data" => $friends
-        ], 201);
+            "data" => $friends,
+        ], Response::HTTP_OK);
+
     }
 
     public function showSingleFriend($friend_id)
     {
-        $friend = auth()->user()->friends()->where('id', $friend_id)->first();
-        if (!$friend) {
-            return response()->json([
-                "message" => "No friend found",
-            ], 404);
-        }
+
+        // $friend = app(FriendsInterface::class)->showSingleFriend($friend_id);
+        $friend = $this->FriendsRepository->showSingleFriend($friend_id);
 
         return response()->json([
             "message" => "successful",
-            "data" => $friend
-        ], 200);
+            "data" => $friend,
+        ], Response::HTTP_OK);
     }
-
 
     // enable friend to view posts
     public function showFriendPosts($friend_id)
     {
+        // $posts = app(FriendsInterface::class)->showFriendPosts($friend_id);
 
-        $friend = auth()->user()->friends()->where('id', $friend_id)->first();
-
-        if (!$friend) {
-            return response()->json([
-                "message" => "No friend found",
-            ], 404);
-        }
-
-        $posts = $friend->posts()->get();
-
-        if ($posts->isEmpty()) {
-            return response()->json([
-                "message" => "No posts found",
-            ], 404);
-        }
+        $posts = $this->FriendsRepository->showFriendPosts($friend_id);
 
         return response()->json([
             "message" => "successful",
-            "posts" => $posts
-        ], 200);
+            "posts" => $posts,
+        ], Response::HTTP_OK);
     }
 
-    public function showFriendSinglePost($friend_id,$post_id){
-        $friend = auth()->user()->friends()->where('id', $friend_id)->first();
-
-        if (!$friend) {
-            return response()->json([
-                "message" => "No friend found",
-            ], 404);
-        }
-
-        $post = $friend->posts()->where('id', $post_id)->first();
-
-        if (!$post) {
-            return response()->json([
-                "message" => "No post found",
-            ], 404);
-        }
+    public function showFriendSinglePost($friend_id, $post_id)
+    {
+        $post = $this->FriendsRepository->showFriendSinglePost($friend_id, $post_id);
 
         return response()->json([
             "message" => "successful",
-            "post" => $post
-        ], 200);
+            "post" => $post,
+        ], Response::HTTP_OK);
+
     }
 
     // unfriend
     public function deleteFriend($friend_id)
     {
-        $user = auth()->user();
-        $friend = $user->friends()->detach($friend_id);
 
-        if (!$friend) {
-            return response()->json([
-                "message" => "No friend found",
-            ], 404);
-        }
+        $deleted = $this->FriendsRepository->deleteFriend($friend_id);
 
         return response()->json([
-            "message" => "Friend deleted successfully",
-            "data" => $friend
-        ], 200);
+            "successful" => true,
+            "data" => $deleted
+        ], Response::HTTP_OK);
     }
 
 }

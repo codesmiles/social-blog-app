@@ -124,10 +124,31 @@ class AuthController extends Controller
 
 
     }
+    
+    // forgot password
+    public function forgotPassword(Request $request)
+    {
+        // validate user
+        $validator = Validator::make(request()->all(), [
+            'email' => 'required|email|exists:users,email',
+        ]);
+
+        // return error if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Invalid credentials'
+            ], Response::HTTP_UNAUTHORIZED); //422
+        }
+
+        
+        
+    }
+
     //    -----------------------------LOGOUT USER -----------------------------------------
     public function logout(request $request)
     {
         
+            
         auth()->user()->tokens()->delete();
 
         return response()->json([

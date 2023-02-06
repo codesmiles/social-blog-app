@@ -29,6 +29,9 @@ Route::get("/", [UserController::class,"index"]);
 Route::post("/signup", [AuthController::class,"store"]);
 Route::post("/login", [AuthController::class,"login"]);
 
+// password reset
+// Route::post("forgot-password", [AuthController::class,"forgotPassword"]);
+// Route::post("reset-password", [AuthController::class,"resetPassword"]);
 
 //protected routes
 Route::group(['middleware' => ['auth:sanctum']], function () {
