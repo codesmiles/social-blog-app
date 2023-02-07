@@ -39,8 +39,6 @@ class AuthController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        // dd($request->only('email', 'password', ));
-
         // user validation
         $validator = Validator::make(request()->all(), [
             'email' => 'required|email|unique:users,email',
@@ -57,19 +55,13 @@ class AuthController extends Controller
         }
 
         //  Model, associated array
-
         $user = $this->AuthRepository->register([
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
         ]);
-        if(!$user){
-            return response()->json([
-                'message' => 'User not created',
-            ], Response::HTTP_UNPROCESSABLE_ENTITY); // 422 status code
-        }
-
+        
         return response()->json([
             'user' => $user,
             'message' => 'User created',
@@ -121,7 +113,7 @@ class AuthController extends Controller
     {
         // delete all tokens
         $this->AuthRepository->logout();        
-        
+
         return response()->json([
             'message' => 'Logged out',
         ], Response::HTTP_OK);
