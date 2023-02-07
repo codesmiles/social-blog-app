@@ -14,7 +14,7 @@ class Posts_model extends Model
     protected $fillable = [
         'user_id',
         'title',
-        'details',
+        'contents',
     ];
 
     public function user()

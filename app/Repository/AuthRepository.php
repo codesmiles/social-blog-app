@@ -18,9 +18,6 @@ class AuthRepository implements AuthInterface
     
     public function logout($request){}
 
-    public function accept(){
-        
-    }
 }
 
 

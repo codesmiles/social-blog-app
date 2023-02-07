@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Interfaces\FriendsInterface;
-// use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
