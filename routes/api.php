@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\FriendsController;
+use App\Http\Controllers\External\ApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,9 +26,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
  //public routes
-Route::get("/", [UserController::class,"index"]);
+Route::get("/external-api", [UserController::class,"index"]);
 Route::post("/signup", [AuthController::class,"store"]);
 Route::post("/login", [AuthController::class,"login"]);
+Route::get("/external-api", [ApiController::class,"index"]);
 
 // password reset
 // Route::post("forgot-password", [AuthController::class,"forgotPassword"]);
