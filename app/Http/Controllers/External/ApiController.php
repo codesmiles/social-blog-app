@@ -2,8 +2,9 @@
 //to get the data from the external api
 namespace App\Http\Controllers\External;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use App\Http\Controllers\Controller;
 use GuzzleHttp\Client; // <--- add this line
 
 class ApiController extends Controller
@@ -16,9 +17,20 @@ class ApiController extends Controller
         $client = new Client();
         // $response = $client->request('GET', 'https://fakestoreapi.com/products');
         $response = $client->get('https://jsonplaceholder.typicode.com/posts');
+        
+        if(!$response->getStatusCode() == 200){
+            return response()->json([
+                "message" => "failed",
+                "data" => null
+            ],Response::HTTP_BAD_REQUEST);
+        }
+
         $data = $response->getBody()->getContents();
         $decodedData = json_decode($data, true);
 
-        return $data;
+        return response()->json([
+            "message" => "success",
+            "data" => $decodedData
+        ],Response::HTTP_OK);
     }
 }
