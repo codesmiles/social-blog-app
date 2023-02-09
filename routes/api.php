@@ -34,6 +34,9 @@ Route::get("/external-api", [ApiController::class,"index"]);
 // password reset
 // Route::post("forgot-password", [AuthController::class,"forgotPassword"]);
 // Route::post("reset-password", [AuthController::class,"resetPassword"]);
+Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('password.update');
+
 
 //protected routes
 Route::group(['middleware' => ['auth:sanctum']], function () {

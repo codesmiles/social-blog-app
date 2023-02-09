@@ -16,7 +16,7 @@ class ApiController extends Controller
         // this code is from the guzzle documentation
         $client = new Client();
         // $response = $client->request('GET', 'https://fakestoreapi.com/products');
-        $response = $client->get('https://jsonplaceholder.typicode.com/posts');
+        $response = $client->get('https://fakestoreapi.com/products');
         
         if(!$response->getStatusCode() == 200){
             return response()->json([
