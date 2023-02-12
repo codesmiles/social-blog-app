@@ -23,7 +23,7 @@ class PostsRepository implements PostsInterface
         $user = auth()->user()->id;
         $posts = Posts_model::where('user_id', $user)->get();
 
-        if ($posts->isEmpty()) {
+        if (count($posts) == 0) {
             return response()->json([
                 "message" => "No posts found",
             ], 404);

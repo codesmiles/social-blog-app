@@ -4,23 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Interfaces\UserInterface;
 
 
 class UserController extends Controller
 {
+    private UserInterface $UserRepository;
+    public function __construct(UserInterface $UserRepository)
+    {
+        $this->UserRepository = $UserRepository;
+    }
+
     //------------------------------- WELCOME ------------------------------
     public function index()
     {
-        return response()->json([
-            "message" => "Welcome to the blog API",
-            // "update" =>"what's up"
-
-        ]);
+        return $this->UserRepository->welcome();
+        
     }
 
 //  ----------------------------USER PROFILE -----------------------------------------
     public function profile(Request $request){
-        $user = User::where('id', auth()->user()->id)->first();
+        $user = $this->UserRepository->profile($request);
+
         return response()->json([
             "message" => "successful",
             "user" => $user,
@@ -31,23 +36,12 @@ class UserController extends Controller
     // ----------------------------SEARCH OTHER USER---------------------------
     public function search(Request $request)
     {
-        $validate = $request->validate([
+        $request->validate([
             'name' => 'required|string|min:3',
         ]);
 
-        $user = User::where('name', $request->name)->first();
-        if (!$user) {
-            return response()->json([
-                "message" => "User not found",
-            ], 400);
-        }
-
-        $self = User::where('name', auth()->user()->name)->first();
-        if ($user == $self) {
-            return response()->json([
-                "message" => "Cannot search for self"
-            ], 400);
-        }
+        $user = $this->UserRepository->search($request);
+        
 
         return response()->json([
             "message" => "successful",

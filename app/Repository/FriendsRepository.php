@@ -35,7 +35,7 @@ class FriendsRepository implements FriendsInterface
     {
         $friends = auth()->user()->friends()->get();
 
-        if ($friends->isEmpty()) {
+        if (count($friends) == 0) {
             return "No friends found";
         }
 
@@ -60,7 +60,7 @@ class FriendsRepository implements FriendsInterface
 
         $posts = $singleFriend->posts()->get();
 
-        if ($posts->isEmpty()) {
+        if (count($posts) == 0) {
             return "No posts found";
         }
 
