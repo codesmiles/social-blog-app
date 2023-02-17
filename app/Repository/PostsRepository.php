@@ -1,8 +1,10 @@
 <?php
 namespace App\Repository;
 
+use App\Exceptions\PostException;
 use App\Interfaces\PostsInterface;
 use App\Models\Posts_model;
+use Symfony\Component\HttpFoundation\Response;
 
 // use Illuminate\Http\Response;
 class PostsRepository implements PostsInterface
@@ -20,16 +22,22 @@ class PostsRepository implements PostsInterface
 
     public function showAllUserPosts()
     {
-        $user = auth()->user()->id;
-        $posts = Posts_model::where('user_id', $user)->get();
+        try {
+            $user = auth()->user()->id;
+            $posts = Posts_model::where('user_id', $user)->get();
 
-        if (count($posts) == 0) {
-            return response()->json([
-                "message" => "No posts found",
-            ], 404);
+            throw_if(count($posts) == 0, PostException::class, "No Posts Found", Response::HTTP_NOT_FOUND);
+            // if (count($posts) == 0) {
+            //     // return response()->json([
+            //     //     "message" => "No posts found",
+            //     // ], 404);
+            // }
+
+            return $posts;
+        } catch (PostException $err) {
+            throw_if($err, PostException::class, "$err", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return $posts;
     }
 
     public function showSinglePost($post_id)

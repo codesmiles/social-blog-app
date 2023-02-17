@@ -1,6 +1,7 @@
 <?php
 namespace App\Repository;
 
+use App\Exceptions\GenericExceptions;
 use App\Interfaces\UserInterface;
 use App\Models\User;
 use Illuminate\Http\Response;
@@ -23,6 +24,7 @@ class UserRepository implements UserInterface
         try {
             $user = User::where('id', auth()->user()->id)->first();
 
+            throw_if(!$user, GenericExceptions::class, "User not found", Response::HTTP_NOT_FOUND);
             return $user;
 
         } catch (\Throwable$e) {

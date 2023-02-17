@@ -20,8 +20,8 @@ class UserController extends Controller
     //------------------------------- WELCOME ------------------------------
     public function index()
     {
-        // throw new GenericExceptions("Welcome to the blog API", Response::HTTP_OK);
-        return $this->UserRepository->welcome();
+        throw new GenericExceptions("Reporting generic error", Response::HTTP_CONFLICT);
+        // return $this->UserRepository->welcome();
         
         
     }

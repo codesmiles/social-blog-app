@@ -22,7 +22,7 @@ class Handler extends ExceptionHandler
      * @var array<int, class-string<\Throwable>>
      */
     protected $dontReport = [
-        //
+        // GenericExceptions::class,
     ];
 
     /**
@@ -43,7 +43,12 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        $this->reportable(function (Throwable $e) {
+        $this->reportable(function (GenericExceptions $e) {
+            //
+            // dump(var: "233456");
+        });
+
+        $this->renderable(function (Throwable $e, $request) {
             //
         });
     }
