@@ -26,7 +26,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
  //public routes
-Route::get("/external-api", [UserController::class,"index"]);
+Route::get("/", [UserController::class,"index"]);
 Route::post("/signup", [AuthController::class,"store"]);
 Route::post("/login", [AuthController::class,"login"]);
 Route::get("/external-api", [ApiController::class,"index"]);

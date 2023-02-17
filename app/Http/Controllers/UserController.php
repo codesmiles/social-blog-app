@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
 use App\Interfaces\UserInterface;
+
+use App\Exceptions\GenericExceptions;
+use Illuminate\Http\Response;
 
 
 class UserController extends Controller
@@ -18,7 +20,9 @@ class UserController extends Controller
     //------------------------------- WELCOME ------------------------------
     public function index()
     {
+        // throw new GenericExceptions("Welcome to the blog API", Response::HTTP_OK);
         return $this->UserRepository->welcome();
+        
         
     }
 

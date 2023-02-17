@@ -197,6 +197,7 @@ return [
         App\Providers\UserAuthServiceProvider::class,
         App\Providers\FriendRepositoryServiceProvider::class,
         App\Providers\PostsRepositoryServiceProvider::class,
+        App\Providers\UserRepositoryServiceProvider::class,
 
     ],
 

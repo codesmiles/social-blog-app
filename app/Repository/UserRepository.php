@@ -9,16 +9,13 @@ class UserRepository implements UserInterface
 {
     public function welcome()
     {
-        try {
+
             return response()->json([
                 "message" => "Welcome to the blog API",
                 // "update" =>"what's up"
 
             ]);
 
-        } catch (\Throwable$e) {
-            echo $e->getMessage();
-        }
     }
 
     public function profile($request)
