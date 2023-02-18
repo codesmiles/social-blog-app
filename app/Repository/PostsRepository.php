@@ -17,7 +17,7 @@ class PostsRepository implements PostsInterface
             'title' => $request['title'],
             'contents' => $request['contents'],
         ]);
-        
+
         throw_if(!$posts, PostException::class, "Post not created", Response::HTTP_INTERNAL_SERVER_ERROR);
         return $posts;
     }
@@ -52,20 +52,20 @@ class PostsRepository implements PostsInterface
 
     public function updatePost($request, $post_id)
     {
-        $post = $this->showSinglePost($post_id);
-
-        $post->update([
+        $post = $this->showSinglePost($post_id)
+        ->update([
             'title' => $request['title'],
             'contents' => $request['contents'],
         ]);
 
+        throw_if(!$post, PostException::class, "Post not updated", Response::HTTP_INTERNAL_SERVER_ERROR);
         return $post;
     }
 
     public function deletePost($post_id)
     {
-        $this->showSinglePost($post_id)->delete();
-
+        $post = $this->showSinglePost($post_id)->delete();
+        throw_if(!$post, PostException::class, "Post not deleted", Response::HTTP_INTERNAL_SERVER_ERROR);
         return "deleted";
     }
 }
