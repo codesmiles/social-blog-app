@@ -12,12 +12,14 @@ class PostsRepository implements PostsInterface
 
     public function savePost($request)
     {
-        return Posts_model::create([
+        $posts = Posts_model::create([
             'user_id' => auth()->user()->id,
             'title' => $request['title'],
             'contents' => $request['contents'],
         ]);
-
+        
+        throw_if(!$posts, PostException::class, "Post not created", Response::HTTP_INTERNAL_SERVER_ERROR);
+        return $posts;
     }
 
     public function showAllUserPosts()
@@ -35,19 +37,16 @@ class PostsRepository implements PostsInterface
 
             return $posts;
         } catch (PostException $err) {
-            throw_if($err, PostException::class, "$err", Response::HTTP_INTERNAL_SERVER_ERROR);
+            throw_if($err, PostException::class, $err, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
     }
 
     public function showSinglePost($post_id)
     {
-
         $post = $this->showAllUserPosts()->where('id', $post_id)->first();
 
-        if (!$post) {
-            return "No post with an id of $post_id found";
-        }
+        throw_if(!$post, PostException::class, "No post with an id of $post_id found", Response::HTTP_NOT_FOUND);
         return $post;
     }
 

@@ -11,7 +11,10 @@ class AuthRepository implements AuthInterface
 {
     public function register($request)
     {
-        return User::create($request);
+        // return User::create($request);
+        $newUser = User::create($request);
+        throw_if($newUser,AuthException::class, "User not created", Response::HTTP_INTERNAL_SERVER_ERROR);
+
     }
 
     public function login($request)
@@ -32,6 +35,7 @@ class AuthRepository implements AuthInterface
 
     public function logout()
     {
+        throw_if(!Auth::user(), AuthException::class, "User not logged in", Response::HTTP_UNAUTHORIZED);
         return Auth::user()->tokens()->delete();
     }
 

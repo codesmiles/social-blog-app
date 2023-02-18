@@ -6,7 +6,7 @@ use App\Interfaces\PostsInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
-
+use App\Exceptions\PostException;
 class PostController extends Controller
 {
     private PostsInterface $PostsRepository;
@@ -22,13 +22,15 @@ class PostController extends Controller
             'contents' => 'required|string|min:3',
         ]);
 
-        if ($post->fails()) {
-            return response()->json([
-                "message" => "Validation error",
-                "errors" => $post->errors(),
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        throw_if($post->fails(), PostException::class, $post->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        // THIS OUTPUT IS THE SAME AS ABOVE LINE
+        // if ($post->fails()) {
+        //     return response()->json([
+        //         "message" => "Validation error",
+        //         "errors" => $post->errors(),
+        //     ], Response::HTTP_UNPROCESSABLE_ENTITY);
         
-        }
+        // }
 
         $savedPost = $this->PostsRepository->savePost($request);
 
@@ -64,12 +66,7 @@ class PostController extends Controller
             'title' => 'required|string|min:3',
             'contents' => 'required|string|min:3',
         ]);
-        if($validate->fails()){
-            return response()->json([
-                "message" => "Validation error",
-                "errors" => $validate->errors(),
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
+        throw_if($validate->fails(), PostException::class, $validate->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
 
         $post = $this->PostsRepository->updatePost($request, $post_id);
 
