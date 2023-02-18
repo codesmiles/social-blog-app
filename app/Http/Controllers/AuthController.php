@@ -10,6 +10,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Exceptions\AuthException;
 
 // use App\Http\Requests\ValidateUserStoreRequest;
 
@@ -47,13 +48,8 @@ class AuthController extends Controller
             'phone' => 'required',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation error',
-                'errors' => $validator->errors(),
-            ], Response::HTTP_UNPROCESSABLE_ENTITY); // 422 status code
-        }
-
+        throw_if($validator->fails(), AuthException::class, $validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        
         //  Model, associated array
         $user = $this->AuthRepository->register([
             'name' => $request->name,
@@ -79,11 +75,7 @@ class AuthController extends Controller
         ]);
 
         // return error if validation fails
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Invalid credentials',
-            ], Response::HTTP_UNAUTHORIZED); //422
-        }
+        throw_if($validator->fails(), AuthException::class, $validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
         $login = $this->AuthRepository->login($request);
 
         // login users
@@ -100,11 +92,12 @@ class AuthController extends Controller
         ]);
 
         // return error if validation fails
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Invalid credentials',
-            ], Response::HTTP_UNAUTHORIZED); //422
-        }
+        throw_if($validator->fails(), AuthException::class, $validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        // if ($validator->fails()) {
+        //     return response()->json([
+        //         'message' => 'Invalid credentials',
+        //     ], Response::HTTP_UNAUTHORIZED); //422
+        // }
 
     }
 

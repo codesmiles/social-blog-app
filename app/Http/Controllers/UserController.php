@@ -44,6 +44,7 @@ class UserController extends Controller
             'name' => 'required|string|min:3',
         ]);
 
+        throw_if($request->fails(), GenericExceptions::class, $request->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
         $user = $this->UserRepository->search($request);
         
 

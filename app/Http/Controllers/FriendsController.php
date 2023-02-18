@@ -92,9 +92,8 @@ class FriendsController extends Controller
     // unfriend
     public function deleteFriend($friend_id)
     {
-
         $deleted = $this->FriendsRepository->deleteFriend($friend_id);
-
+        
         return response()->json([
             "successful" => true,
             "data" => $deleted
