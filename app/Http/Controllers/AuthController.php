@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Interfaces\AuthInterface;
-use App\Models\User;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
+use App\Exceptions\AuthException;
+use App\Interfaces\AuthInterface;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use App\Exceptions\AuthException;
 
 // use App\Http\Requests\ValidateUserStoreRequest;
 
@@ -51,6 +49,7 @@ class AuthController extends Controller
         throw_if($validator->fails(), AuthException::class, $validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
         
         //  Model, associated array
+
         $user = $this->AuthRepository->register([
             'name' => $request->name,
             'email' => $request->email,
@@ -58,6 +57,8 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
         
+        
+
         return response()->json([
             'user' => $user,
             'message' => 'User created',
@@ -93,6 +94,7 @@ class AuthController extends Controller
 
         // return error if validation fails
         throw_if($validator->fails(), AuthException::class, $validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        
         // if ($validator->fails()) {
         //     return response()->json([
         //         'message' => 'Invalid credentials',

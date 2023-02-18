@@ -1,6 +1,7 @@
 <?php
 namespace App\Repository;
 
+use App\Events\UserCreated;
 use App\Interfaces\AuthInterface;
 use App\Models\User;
 use Illuminate\Http\Response;
@@ -9,17 +10,22 @@ use App\Exceptions\AuthException;
 
 class AuthRepository implements AuthInterface
 {
-    public function register($request)
+    public function register(array $request)
     {
         // return User::create($request);
         $newUser = User::create($request);
-        throw_if($newUser,AuthException::class, "User not created", Response::HTTP_INTERNAL_SERVER_ERROR);
+        throw_if(!$newUser,AuthException::class, "User not created", Response::HTTP_INTERNAL_SERVER_ERROR);
+
+        // Firing an event for creating users
+        event(new UserCreated($newUser));
+
+        return $newUser;
 
     }
 
-    public function login($request)
+    public function login( $request)
     {
-        try {
+        
         $credentials = $request->only('email', 'password');
 
         throw_if(!Auth::attempt($credentials), AuthException::class, "Invalid Credentials", Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -28,9 +34,6 @@ class AuthRepository implements AuthInterface
             'message' => 'User logged in',
             "token" => Auth::user()->createToken('auth_token')->plainTextToken,
         ];
-        } catch (AuthException $err) {
-            throw $err;
-        }
     }
 
     public function logout()
