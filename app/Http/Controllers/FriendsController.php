@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Interfaces\FriendsInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Exceptions\FriendException;
 
 class FriendsController extends Controller
 {
@@ -19,16 +20,11 @@ class FriendsController extends Controller
         $request->validate([
             'name' => 'required|string|min:3',
         ]);
+        throw_if($request->fails(), FriendException::class, $request->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
 
         // $friends = app(FriendsInterface::class)->searchFriends();
-
         $friend = $this->FriendsRepository->searchFriends($request);
-
-        if ($friend == Response::HTTP_NOT_FOUND) {
-            return response()->json([
-                "message" => "No friend found",
-            ], Response::HTTP_NOT_FOUND);
-        }
+    
         return response()->json([
             "message" => "successful",
             "data" => $friend,
@@ -40,20 +36,15 @@ class FriendsController extends Controller
 
         $data = $this->FriendsRepository->addFriend($friend_id);
 
-        if ($data == Response::HTTP_CONFLICT) {
-            return response()->json([
-                "message" => "Friend already exists",
-            ], Response::HTTP_CONFLICT);
-        }
 
         return response()->json([
             "message" => "Friend added successfully",
+            "data" => $data,
         ], Response::HTTP_CREATED);
     }
 
     public function showUserFriends()
     {
-        // $friends = app(FriendsInterface::class)->showUserFriends();
         $friends = $this->FriendsRepository->showUserFriends();
 
         return response()->json([
@@ -66,7 +57,6 @@ class FriendsController extends Controller
     public function showSingleFriend($friend_id)
     {
 
-        // $friend = app(FriendsInterface::class)->showSingleFriend($friend_id);
         $friend = $this->FriendsRepository->showSingleFriend($friend_id);
 
         return response()->json([

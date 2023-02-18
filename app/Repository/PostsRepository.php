@@ -65,6 +65,7 @@ class PostsRepository implements PostsInterface
     public function deletePost($post_id)
     {
         $post = $this->showSinglePost($post_id)->delete();
+        
         throw_if(!$post, PostException::class, "Post not deleted", Response::HTTP_INTERNAL_SERVER_ERROR);
         return "deleted";
     }

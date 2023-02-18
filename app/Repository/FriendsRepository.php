@@ -4,6 +4,7 @@ namespace App\Repository;
 use App\Interfaces\FriendsInterface;
 use App\Models\User;
 use Illuminate\Http\Response;
+use App\Exceptions\FriendException;
 
 class FriendsRepository implements FriendsInterface
 {
@@ -11,23 +12,20 @@ class FriendsRepository implements FriendsInterface
     public function searchFriends($request)
     {
         $user = auth()->user()->id;
+        throw_if(!$user, FriendException::class, "User not authorized", Response::HTTP_UNAUTHORIZED);
+        
         $friend = User::where('name', $request->name)->where('id', '!=', $user)->get();
+        throw_if(count($friend) == 0, FriendException::class, "No friend found", Response::HTTP_NOT_FOUND);
 
-        if ($friend->isEmpty()) {
-            return Response::HTTP_NOT_FOUND;
-        }
         return $friend;
     }
 
     public function addFriend($friend_id)
     {
         $exist = auth()->user()->friends()->where('friend_id', $friend_id)->exists();
-
         // if new friend already exists
-        if ($exist) {
-            return Response::HTTP_CONFLICT;
-        }
-
+        throw_if($exist, FriendException::class, "Friend already exists", Response::HTTP_CONFLICT);
+    
         return auth()->user()->friends()->attach($friend_id);
     }
 
@@ -35,9 +33,7 @@ class FriendsRepository implements FriendsInterface
     {
         $friends = auth()->user()->friends()->get();
 
-        if (count($friends) == 0) {
-            return "No friends found";
-        }
+        throw_if(count($friends) == 0, FriendException::class, "No friends found", Response::HTTP_NOT_FOUND);
 
         return $friends;
     }
@@ -45,10 +41,8 @@ class FriendsRepository implements FriendsInterface
     public function showSingleFriend($friend_id)
     {
         $friend = $this->showUserFriends()->where('id', $friend_id)->first();
-        // $friend = auth()->user()->friends()->where('id', $friend_id)->first();
-        if (!$friend) {
-            return "no friend with an id of $friend_id";
-        }
+        throw_if(!$friend, FriendException::class, "No friend with an id of $friend_id", Response::HTTP_NOT_FOUND);
+        
         return $friend;
 
     }
@@ -59,10 +53,8 @@ class FriendsRepository implements FriendsInterface
         $singleFriend = $this->showSingleFriend($friend_id);
 
         $posts = $singleFriend->posts()->get();
+        throw_if(count($posts) == 0, FriendException::class, "No posts found", Response::HTTP_NOT_FOUND);
 
-        if (count($posts) == 0) {
-            return "No posts found";
-        }
 
         return $posts;
 
@@ -70,9 +62,7 @@ class FriendsRepository implements FriendsInterface
     public function showFriendSinglePost($friend_id, $post_id)
     {
         $post = $this->showFriendPosts($friend_id)->where('id', $post_id)->first();
-        if (!$post) {
-            return "No post with the id of $post_id";
-        }
+        throw_if(!$post, FriendException::class, "No post with the id of $post_id", Response::HTTP_NOT_FOUND);
         return $post;
     }
 
@@ -81,11 +71,8 @@ class FriendsRepository implements FriendsInterface
         // $friend = $this->showUserFriends()->detach($friend_id);
         $user = auth()->user();
         $friend = $user->friends()->detach($friend_id);
-
-        if (!$friend) {
-            return "No friend with the id of $friend_id";
-        }
-
+        
+        throw_if(!$friend, FriendException::class, "No friend with the id of $friend_id", Response::HTTP_NOT_FOUND);
         return $friend;
     }
 

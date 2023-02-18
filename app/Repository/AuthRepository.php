@@ -35,7 +35,7 @@ class AuthRepository implements AuthInterface
 
     public function logout()
     {
-        throw_if(!Auth::user(), AuthException::class, "User not logged in", Response::HTTP_UNAUTHORIZED);
+        // throw_if(!Auth::user(), AuthException::class, "User not logged in", Response::HTTP_UNAUTHORIZED);
         return Auth::user()->tokens()->delete();
     }
 
