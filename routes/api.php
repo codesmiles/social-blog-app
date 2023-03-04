@@ -47,4 +47,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // show-friend-posts,show-single-friend-post,delete-friend
     require __DIR__ . "/api/protected/user-friends-post.route.php";
 
+    // comments
+    require __DIR__ . '/api/protected/commentRoute.php';
+
 });

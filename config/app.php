@@ -198,6 +198,7 @@ return [
         App\Providers\FriendRepositoryServiceProvider::class,
         App\Providers\PostsRepositoryServiceProvider::class,
         App\Providers\UserRepositoryServiceProvider::class,
+        App\Providers\UserCommentProvider::class,
 
     ],
 
