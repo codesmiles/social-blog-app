@@ -2,6 +2,7 @@
 namespace App\Repository;
 
 use App\Interfaces\CommentInterface;
+use App\Models\Comments_model;
 
 class CommentRepository implements CommentInterface
 {
@@ -10,12 +11,15 @@ class CommentRepository implements CommentInterface
         return "it works";
 
     }
-    public function save($request, $user_id)
+    public function save($comment, $user_id, $post_id)
     {
-        $comment = $request->comment;
-        $post_id = $request->post_id;
 
-    dump($comment, $post_id, $user_id);
+        $entry = Comments_model::create([
+            "comment" => $comment,
+            "user_id" => $user_id,
+            "post_id" => $post_id
+        ]);
+        return $entry;
 
 
 

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Comments_model;
 
 class Posts_model extends Model
 {
@@ -23,10 +24,10 @@ class Posts_model extends Model
     }
 
     // JUST IN CASE I WANT TO RUN THE COMMENT ENDPOINT
-    // public function comments()
-    // {
-    //     return $this->hasMany(Comments_model::class);
-    // }
+    public function comments()
+    {
+        return $this->hasMany(Comments_model::class);
+    }
 
     
 }
