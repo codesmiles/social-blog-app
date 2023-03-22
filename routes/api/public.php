@@ -8,7 +8,7 @@ use App\Http\Controllers\External\ApiController;
 
 
 //public routes
-Route::get("/", [UserController::class,"index"]);
+Route::get("/", [UserController::class,"index"]); // welcome
 Route::post("/signup", [AuthController::class,"store"]);
 Route::post("/login", [AuthController::class,"login"]);
-Route::get("/external-api", [ApiController::class,"index"]);
+Route::get("/external-api", [ApiController::class,"index"]); //external api

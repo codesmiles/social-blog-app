@@ -29,7 +29,6 @@ class CommentsController extends Controller
             'comment' => 'required|string|min:3'
         ]);
         $user_id = auth()->user()->id;
-     
         $entry = $this->commentInterface->save($request->comment, $user_id, $post_id);
         
     
